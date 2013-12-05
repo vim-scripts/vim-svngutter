@@ -1,0 +1,239 @@
+*svngutter.txt*              A Vim plugin which shows a svn diff in the gutter.
+
+
+                           Vim Svn Gutter
+
+
+Author:            Andy Betteridge <http://https://github.com/ajbetteridge/>
+Plugin Homepage:   <https://github.com/ajbetteridge/vim-svngutter>
+
+===============================================================================
+CONTENTS                                                    *SvnGutterContents*
+
+  1.  Introduction ................. |SvnGutterIntroduction|
+  2.  Installation ................. |SvnGutterInstallation|
+  3.  Usage ........................ |SvnGutterUsage|
+  4.  Commands ..................... |SvnGutterCommands|
+  5.  FAQ .......................... |SvnGutterFAQ|
+
+===============================================================================
+1. INTRODUCTION                                         *SvnGutterIntroduction*
+                                                                    *SvnGutter*
+
+Vim Svn Gutter is a Vim plugin which shows a svn diff in the 'gutter' (sign
+column). It shows whether each line has been added, modified, and where lines
+have been removed.
+
+This is a copy of rewrite of https://github.com/airblade/vim-gitgutter to make
+it work with SubVersion instead of Git.
+
+===============================================================================
+2. INSTALLATION                                         *SvnGutterInstallation*
+
+If you don't have a preferred installation method, I recommend installing
+pathogen.vim, and then simply copy and paste:
+>
+  cd ~/.vim/bundle
+  svn clone svn://github.com/ajbetteridge/vim-svngutter.svn
+<
+Or for Vundle users:
+
+Add Bundle 'ajbetteridge/vim-svngutter' to your |vimrc| and then:
+
+  - either within Vim: :BundleInstall
+  - or in your shell: vim +BundleInstall +qall
+
+===============================================================================
+3. USAGE                                                       *SvnGutterUsage*
+
+You don't have to do anything: it just works.
+
+===============================================================================
+4. COMMANDS                                                 *SvnGutterCommands*
+
+Commands for turning Svn Gutter on and off:
+
+  :SvnGutterDisable                                         *:SvnGutterDisable*
+      Explicitly turn Svn Gutter off.
+
+  :SvnGutterEnable                                           *:SvnGutterEnable*
+      Explicitly turn Svn Gutter on.
+
+  :SvnGutterToggle                                           *:SvnGutterToggle*
+      Explicitly turn Svn Gutter on if it was off and vice versa.
+
+  :SvnGutter                                                       *:SvnGutter*
+      Update signs for the current buffer.
+
+  :SvnGutterAll                                                 *:SvnGutterAll*
+      Update signs across all buffers.
+
+Commands for turning line highlighting on and off (defaults to off):
+
+  :SvnGutterLineHighlightsEnable               *:SvnGutterLineHighlightsEnable*
+      Explicitly turn line highlighting on.
+
+  :SvnGutterLineHighlightsDisable             *:SvnGutterLineHighlightsDisable*
+      Explicitly turn line highlighting off.
+
+  :SvnGutterLineHighlightsToggle               *:SvnGutterLineHighlightsToggle*
+      Explicitly turn line highlighting on if it was off and vice versa.
+
+Commands for jumping between marked hunks:
+
+  :SvnGutterNextHunk                                       *:SvnGutterNextHunk*
+      Jump to the next marked hunk.  Takes a count.
+
+  :SvnGutterPrevHunk                                       *:SvnGutterPrevHunk*
+      Jump to the previous marked hunk.  Takes a count.
+
+===============================================================================
+5. CUSTOMISATION                                       *SvnGutterCustomisation*
+
+You can customise:
+
+- The sign column's colours
+- The signs' colours and symbols
+- Line highlights
+- Extra arguments for svn-diff
+- Whether or not to escape grep (defaults to no)
+- Whether or not vim-svngutter is on initially (defaults to on)
+- Whether or not signs are shown (defaults to yes)
+- Whether or not line highlighting is on initially (defaults to off)
+- Whether or not vim-svngutter runs in realtime (defaults to yes)
+- Whether or not vim-svngutter runs eagerly (defaults to yes)
+
+Please note that vim-svngutter won't override any colours or highlights you've
+set in your colorscheme.
+
+SIGN COLUMN
+
+The background colour of the sign column is controlled by the |hlSignColumn|
+highlight group.  This will be either set in your colorscheme or Vim's default.
+
+To find out where it's set, and to what it's set, use:
+>
+  :verbose highlight SignColumn
+<
+
+If your `SignColumn` is not set, i.e if
+>
+  :highlight SignColumn  " gives you `SignColumn xxx cleared`
+<
+vim-svngutter will set it to the same as your line number column (i.e. the
+|hl-LineNr| highlight group).
+
+To change your sign column's appearance, update your colorscheme or |vimrc|
+like this:
+
+  Desired appearance                  Command ~
+  Same as line number column          highlight clear SignColumn
+  User-defined (terminal Vim)         highlight SignColumn ctermbg={whatever}
+  User-defined (graphical Vim)        highlight SignColumn guibg={whatever}
+
+SIGNS' COLOURS AND SYMBOLS
+
+To customise the colours, set up the following highlight groups in your
+colorscheme or |vimrc|:
+
+>
+  SvnGutterAdd          " an added line
+  SvnGutterChange       " a changed line
+  SvnGutterDelete       " at least one removed line
+  SvnGutterChangeDelete " a changed line followed by at least one removed line
+<
+
+You can either set these with `highlight SvnGutterAdd {key}={arg}...` or link
+them to existing highlight groups with, say:
+>
+  highlight link SvnGutterAdd DiffAdd
+<
+
+To customise the symbols, add the following to your |vimrc|:
+>
+  let g:svngutter_sign_added = 'xx'
+  let g:svngutter_sign_modified = 'yy'
+  let g:svngutter_sign_removed = 'zz'
+  let g:svngutter_sign_modified_removed = 'ww'
+<
+
+SIGNS
+
+To never show signs, use this:
+>
+  let svn:svngutter_signs = 0
+<
+
+LINE HIGHLIGHTS
+
+Similarly to the signs' colours, set up the following highlight groups in your
+colorscheme or |vimrc|:
+>
+  SvnGutterAddLine          " default: links to DiffAdd
+  SvnGutterChangeLine       " default: links to DiffChange
+  SvnGutterDeleteLine       " default: links to DiffDelete
+  SvnGutterChangeDeleteLine " default: links to SvnGutterChangeLineDefault
+<
+
+EXTRA ARGUMENTS FOR svn-DIFF
+
+To pass extra arguments to svn-diff, add this to your |vimrc|:
+>
+  let g:svngutter_diff_args = '-w'
+<
+
+TO ESCAPE GREP
+
+To avoid any alias you have for grep, use this:
+>
+  let g:svngutter_escape_grep = 1
+<
+
+TO TURN OFF VIM-svnGUTTER BY DEFAULT
+
+Add to your |vimrc|
+>
+  let g:svngutter_enabled = 0
+<
+
+TO TURN ON LINE HIGHLIGHTING BY DEFAULT
+
+Add to your |vimrc|
+>
+  let g:svngutter_highlight_lines = 1
+<
+
+TO STOP VIM-svnGUTTER RUNNING IN REALTIME
+
+Add to your |vimrc|
+>
+  let g:svngutter_realtime = 0
+<
+
+TO STOP VIM-svnGUTTER RUNNING EAGERLY
+
+Add to your |vimrc|
+>
+  let g:svngutter_eager = 0
+<
+
+
+===============================================================================
+6. FAQ                                                           *SvnGutterFAQ*
+
+a. Why are the colours in the sign column weird?
+
+  Your colorscheme is configuring the |hl-SignColumn| highlight group weirdly.
+  Please see |SvnGutterCustomisation| on customising the sign column.
+
+b. Why is no sign shown if I delete the first line(s) in a file?
+
+  vim-svngutter shows removed lines with a sign on the line above.  In this
+  case there isn't a line above so vim-svngutter can't show the sign.
+
+c. What happens if I also use another plugin which uses signs (e.g. Syntastic)?
+
+  Vim only allows one sign per line. Before adding a sign to a line,
+  vim-svngutter checks whether a sign has already been added by somebody else.
+  If so it doesn't do anything. In other words vim-svngutter won't overwrite
+  another plugin's signs. It also won't remove another plugin's signs.
