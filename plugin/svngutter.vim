@@ -84,10 +84,14 @@ endfunction
 
 function! s:discard_stdout_and_stderr()
   if !exists('s:discard')
+    let null_dev = '/dev/null'
+    if has("win32") || has("win16")
+        let null_dev = 'null'
+    endif
     if &shellredir ==? '>%s 2>&1'
-      let s:discard = ' > /dev/null 2>&1'
+      let s:discard = ' > ' . null_dev . ' 2>&1'
     else
-      let s:discard = ' >& /dev/null'
+      let s:discard = ' >& ' . null_dev
     endif
   endif
   return s:discard
