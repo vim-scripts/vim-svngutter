@@ -32,6 +32,11 @@ function! s:init()
     let s:sign_ids = {}  " key: filename, value: list of sign ids
     let s:other_signs = []
 
+    " Global variable parameter for `svn diff` -- by default call it without context
+    if !exists('g:svngutter_svndiffcmd')
+      let g:svngutter_svndiffcmd = 'svn diff --diff-cmd=diff -x -U0'
+    endif
+
     let g:svngutter_initialised = 1
   endif
 endfunction
@@ -118,7 +123,8 @@ endfunction
 " Diff processing {{{
 
 function! s:run_diff()
-  let cmd = 'svn diff ' . shellescape(s:current_file()) .
+  " Use variable for `svn diff`
+  let cmd = g:svngutter_svndiffcmd . ' ' . shellescape(s:current_file()) .
         \ ' | grep -e "^@@ "'
   let diff = system(s:command_in_directory_of_current_file(cmd))
   return diff
